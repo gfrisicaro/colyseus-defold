@@ -21,14 +21,24 @@
   <h3>
 </div>
 
-# Installation
+# Supported platforms (See [usage](#usage))
+
+- [Defold Engine](#defold-engine)
+- [CoronaSDK](#corona-sdk)
+
+## [Defold Engine](https://www.defold.com/)
+
+[Defold](https://defold.com) is a multi-platform game engine made by [King.com](https://king.com/).
+
+### Installation
+
 You can use the modules from this project in your own project by adding this project as a [Defold library dependency](http://www.defold.com/manuals/libraries/). Open your game.project file and in the `dependencies` field under `project` add:
 
 	https://github.com/gamestdio/colyseus-defold/archive/master.zip
 
 Or point to the ZIP file of a [specific release](https://github.com/gamestdio/colyseus-defold/releases).
 
-## Dependencies
+### Dependencies
 
 This project depends on the WebSocket, LuaSocket and LuaSec projects:
 
@@ -37,6 +47,30 @@ This project depends on the WebSocket, LuaSocket and LuaSec projects:
 * [defold-luasec](https://github.com/subsoap/defold-luasec/archive/master.zip)
 
 You need to add these as dependencies in your game.project file, along with the dependency to this project itself.
+
+## [Corona SDK](https://coronalabs.com/)
+
+Corona is a software development kit (SDK) developed by Corona Labs Inc. Corona allows software programmers to build 2D mobile applications for iOS, Android, and Kindle, desktop applications for Windows and OS X, and connected TV applications for Apple TV and Android TV.
+
+### Installation
+
+- Copy [`coronasdk/example/dmc_corona`](#d) folder into your project structure.
+- Add [openssl](https://docs.coronalabs.com/plugin/openssl/) and [bit](https://docs.coronalabs.com/plugin/bit/) plugins into your `build.settings` file:
+
+```
+settings =
+{
+    -- ...
+
+    plugins =
+    {
+        ["plugin.bit"] = { publisherId = "com.coronalabs" },
+        ["plugin.openssl"] = { publisherId = "com.coronalabs" },
+    },
+
+    -- ...
+}
+```
 
 # Usage
 

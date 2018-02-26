@@ -3,32 +3,14 @@ local Room = require('colyseus.room')
 local protocol = require('colyseus.protocol')
 local EventEmitter = require('colyseus.events').EventEmitter
 local msgpack = require('colyseus.messagepack.MessagePack')
-
---
--- Utility functions
---
-local colyseus_id_file = sys.get_save_file("colyseus", "colyseusid")
-local function get_colyseus_id ()
-  local data = sys.load(colyseus_id_file)
-  -- if not next(my_table) then
-  -- end
-  return data[1] or ""
-end
-
-local function set_colyseus_id(colyseus_id)
-  local data = {}
-  table.insert(data, colyseus_id)
-  if not sys.save(colyseus_id_file, data) then
-    print("colyseus.client: set_colyseus_id couldn't set colyseus_id locally.")
-  end
-end
+local utils = require('colyseus.utils')
 
 local client = { VERSION = "0.8.0" }
 client.__index = client
 
 function client.new (endpoint)
   local instance = EventEmitter:new({
-    id = get_colyseus_id(),
+    id = utils.get_colyseus_id(),
     roomStates = {}, -- object
     rooms = {}, -- object
     connectingRooms = {}, -- object
@@ -41,7 +23,7 @@ end
 
 function client:init(endpoint)
   self.hostname = endpoint
-  self.connection = Connection.new(self.hostname .. "/?colyseusid=" .. get_colyseus_id())
+  self.connection = Connection.new(self.hostname .. "/?colyseusid=" .. utils.get_colyseus_id())
 
   self.connection:on("message", function(message)
     self:on_batch_message(message)
@@ -104,7 +86,7 @@ function client:on_message(message)
     local roomId = message[2]
 
     if message[1] == protocol.USER_ID then
-      set_colyseus_id(message[2])
+      utils.set_colyseus_id(message[2])
 
       self.id = message[2]
       self:emit('open')

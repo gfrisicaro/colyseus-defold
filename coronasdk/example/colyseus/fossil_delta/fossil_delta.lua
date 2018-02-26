@@ -48,7 +48,6 @@
 -- as representing official policies, either expressed or implied, of anybody
 -- else.
 
--- local bit = bit or require"bit"
 local bit = bit
 
 local fossil_delta = {}

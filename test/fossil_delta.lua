@@ -1,3 +1,4 @@
+_G.bit = require "bit"
 local fossil_delta = require 'colyseus.fossil_delta.fossil_delta'
 
 function read_file(file)
