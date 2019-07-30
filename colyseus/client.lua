@@ -34,19 +34,22 @@ function client:init(endpoint, connect_on_init)
     self.hostname = self.hostname .. "/"
   end
 
-  self.connection = Connection.new()
+  self.connection = Connection.new( endpoint )
+
   self.auth = Auth.new(endpoint)
   self.push = Push.new(endpoint)
 
+  print( "endpoint " .. endpoint )
+
   self.connection:on("open", function()
-    if storage.get_item("colyseusid") ~= nil then
+    --if storage.get_item("colyseusid") ~= nil then
       self:emit("open")
-    end
+    --end
   end)
 
   self.connection:on("message", function(message)
     self:on_batch_message(message)
-  end)
+  end)  
 
   self.connection:on("close", function(message)
     self:emit("close", message)

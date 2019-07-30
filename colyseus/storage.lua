@@ -1,19 +1,16 @@
 local m = {}
 local data = {}
 
-local storage_file_path = sys.get_save_file("colyseus", "storage")
-
 function m.get_item (key)
-  data = sys.load(storage_file_path)
-  return data[key] or ""
+  return system.getPreference("app", key, "string")
 end
 
 function m.set_item (key, value)
-  data[key] = value
 
-  if not sys.save(storage_file_path, data) then
-    print("colyseus.client: storage.set_item couldn't set '" .. key .. "' locally.")
-  end
+  local appPrefs = {}
+  appPrefs[key] = value
+
+  system.setPreferences("app" , appPrefs)
 end
 
 return m

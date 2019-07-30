@@ -1,15 +1,14 @@
 local utils = require "colyseus.utils"
 local storage = require "colyseus.storage"
 local EventEmitter = require('colyseus.eventemitter')
+local json = require( "json" )
 
 local Auth = {}
 Auth.__index = Auth
 
-local info = sys.get_sys_info()
-
 function Auth.new (endpoint)
   local instance = EventEmitter:new({
-    use_https = not sys.get_engine_info().is_debug,
+    use_https = not system.getInfo("environment") == "simulator",
     endpoint = endpoint:gsub("ws", "http"),
     http_timeout = 10,
     token = storage.get_item("token"),
@@ -17,10 +16,6 @@ function Auth.new (endpoint)
     ping_interval = 20,
     ping_service_handle = nil
   })
-
-  if info.system_name == "HTML5" then
-    instance.use_https = html5.run("window['location']['protocol']") == "https:"
-  end
 
   setmetatable(instance, Auth)
   return instance
@@ -39,29 +34,17 @@ function Auth:has_token()
 end
 
 function Auth:get_platform_id()
-  if info.system_name == "iPhone OS" then
+  if system.getInfo("platform") == "ios" then
     return "ios"
 
-  elseif info.system_name == "Android" then
+  elseif system.getInfo("platform") == "android" then
     return "android"
-
-  elseif info.system_name == "HTML5" then
-    return "html5"
-
-  elseif info.system_name == "Darwin" then
-    return "osx"
-
-  elseif info.system_name == "Windows" then
-    return "windows"
-
-  elseif info.system_name == "Linux" then
-    return "linux"
   end
 end
 
 function Auth:get_device_id()
   if self:get_platform_id() ~= nil then
-		return info.device_ident
+		return system.getInfo( "deviceID" )
   else
 		local unique_id = storage.get_item("device_id")
 		if type(unique_id) ~= "string" then
@@ -88,20 +71,25 @@ function Auth:request(method, segments, params, callback, headers, body)
     segments = segments .. "?" .. table.concat(query_params, "&")
   end
 
-  local options = {}
-  options['timeout'] = self.http_timeout
-
-  http.request(self:build_url(segments), method, function(self, id, response)
-		local data = response.response ~= '' and json.decode(response.response)
-    local has_error = (response.status >= 400)
+  local function networkListener( event )
+    local data = event.response ~= '' and json.decode(event.response)
+    local has_error = event.isError
     local err = nil
 
     if has_error then
-      err = (not data or next(data) == nil) and response.response or data.error
+      err = event.response
+      data = ''
     end
 
     callback(err, data)
-	end, headers, body or "", options)
+  end
+
+  local params = {}
+  params.headers = headers
+  params.body = body or ""
+  params.timeout = self.http_timeout
+
+  network.request(self:build_url(segments), method, params)
 end
 
 function Auth:login_request (query_params, success_cb)
@@ -150,7 +138,7 @@ end
 function Auth:facebook_login(success_cb, permissions)
   local _self = self
   if not facebook then
-    error ("Facebook login is not supported on '" .. sys.get_sys_info().system_name .. "' platform")
+    error ("Facebook login is not supported on '" .. system.getInfo( "platform" ) .. "' platform")
   end
 
   facebook.login_with_read_permissions(permissions or { "public_profile", "email", "user_friends" }, function(self, data)

@@ -28,6 +28,10 @@ class ChatRoom extends colyseus.Room {
     console.log("ChatRoom created!", options);
   }
 
+  onAuth (options) { 
+    return true
+  }
+
   requestJoin (options) {
     console.log("request join!", options);
     return true;

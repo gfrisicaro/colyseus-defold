@@ -15,12 +15,12 @@ function Push.new (endpoint)
 end
 
 function Push:register()
-  local system_name = sys.get_sys_info().system_name
-  if system_name == "HTML5" then
+  local system_name = system.getInfo( "platform" )
+  if system_name == "html5" then
     -- run webpush register script
     html5.run(self:_webpush_register_script())
 
-  elseif system_name == "iPhone OS" or system_name == "Android" then
+  elseif system_name == "ios" or system_name == "android" then
     -- register for iOS / Android
 
     push.register({}, function(self, token, error)
