@@ -42,7 +42,7 @@ function connection:open(endpoint)
       self:emit("open")
 
     elseif event.type == WebSocket.ONMESSAGE then
-      self:emit("message", event.message)
+      self:emit("message", event.message.data)
 
     elseif event.type == WebSocket.ONCLOSE then
       self:emit("close", event)
