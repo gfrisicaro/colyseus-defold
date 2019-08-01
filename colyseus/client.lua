@@ -39,7 +39,7 @@ function client:init(endpoint, connect_on_init)
   self.auth = Auth.new(endpoint)
   self.push = Push.new(endpoint)
 
-  print( "endpoint " .. endpoint )
+  --print( "endpoint " .. endpoint )
 
   self.connection:on("open", function()
     --if storage.get_item("colyseusid") ~= nil then

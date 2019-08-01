@@ -55,7 +55,7 @@ class ChatRoomSchema extends colyseus.Room {
 
   async onAuth(options) {
     // console.log("onAuth: ", options);
-    return await social.User.findById(social.verifyToken(options.token)._id);
+    return true //await social.User.findById(social.verifyToken(options.token)._id);
   }
 
   requestJoin (options) {
