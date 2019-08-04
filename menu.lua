@@ -43,15 +43,21 @@ end
 -- 'onRelease' event listener for playBtn
 local function onConnectBtnRelease()
 
-	-- go to level1.lua scene
-	--composer.gotoScene( "level1", "fade", 500 )
-
   client:connect()
 
-  --local queryParams = {}
-  --client.auth:login_request(queryParams, loginCallback)
-
   return true	-- indicates successful touch
+end
+
+local function loginResponseCallback(err, auth) 
+	print(auth)
+  	print(err)
+end
+
+local function onLoginBtnRelease()
+
+	local queryParams = {}
+	client.auth:login_request( queryParams, loginResponseCallback )
+
 end
 
 local function onRoomBtnRelease()
@@ -60,6 +66,7 @@ local function onRoomBtnRelease()
 
 	room:on("statechange", function(state)
   	  print("new state:", state)
+  	  print("players:", state.numberOfPots)
 	end)
 
 	room:on("message", function(message)
@@ -81,7 +88,7 @@ local function onRoomBtnRelease()
 	end)
 
 	return true
-end
+end 
 
 function scene:create( event )
 	local sceneGroup = self.view
@@ -116,6 +123,18 @@ function scene:create( event )
 	connectBtn.y = display.contentHeight - 125
 
 	-- create a widget button (which will loads level1.lua on release)
+	loginBtn = widget.newButton{
+		label="Login",
+		labelColor = { default={255}, over={128} },
+		default="button.png",
+		over="button-over.png",
+		width=154, height=40,
+		onRelease = onLoginBtnRelease	-- event listener function
+	}
+	loginBtn.x = display.contentCenterX
+	loginBtn.y = connectBtn.y + 50
+
+	-- create a widget button (which will loads level1.lua on release)
 	roomBtn = widget.newButton{
 		label="Join room",
 		labelColor = { default={255}, over={128} },
@@ -125,7 +144,7 @@ function scene:create( event )
 		onRelease = onRoomBtnRelease	-- event listener function
 	}
 	roomBtn.x = display.contentCenterX
-	roomBtn.y = connectBtn.y + 50
+	roomBtn.y = loginBtn.y + 50
 
 	-- all display objects must be inserted into group
 	sceneGroup:insert( background )
@@ -145,7 +164,7 @@ function scene:show( event )
 		--
 		-- INSERT code here to make the scene come alive
 		-- e.g. start timers, begin animation, play audio, etc.
-	end
+	end 
 end
 
 function scene:hide( event )

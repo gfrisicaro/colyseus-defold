@@ -13,7 +13,7 @@ function Auth.new (endpoint)
     http_timeout = 10,
     token = storage.get_item("token"),
 
-    ping_interval = 20,
+    ping_interval = 20000,
     ping_service_handle = nil
   })
 
@@ -89,7 +89,7 @@ function Auth:request(method, segments, params, callback, headers, body)
   params.body = body or ""
   params.timeout = self.http_timeout
 
-  network.request(self:build_url(segments), method, params)
+  network.request(self:build_url(segments), method, networkListener, params)
 end
 
 function Auth:login_request (query_params, success_cb)
@@ -181,7 +181,7 @@ function Auth:register_ping_service()
   if self.ping_service_handle ~= nil then
     self:unregister_ping_service()
   end
-  self.ping_service_handle = timer.delay(self.ping_interval, true, function() self:ping() end)
+  self.ping_service_handle = timer.performWithDelay(self.ping_interval, function() self:ping() end, -1)
 end
 
 function Auth:unregister_ping_service()
